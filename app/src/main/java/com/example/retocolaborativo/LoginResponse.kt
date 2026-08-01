@@ -1,3 +1,7 @@
 package com.example.retocolaborativo
 
-data class LoginResponse()
+data class LoginResponse(
+    val id: Int,
+    val username: String,
+    val email: String,
+)
