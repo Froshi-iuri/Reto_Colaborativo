@@ -1,5 +1,6 @@
 package com.example.retocolaborativo
 
+import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
@@ -9,4 +10,7 @@ object RetrofitClient {
         level = HttpLoggingInterceptor.Level.BODY
 
     }
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .build()
 }
