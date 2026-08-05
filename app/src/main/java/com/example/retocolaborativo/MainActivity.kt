@@ -5,6 +5,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private var token: String? = null   // aquí guardaremos la "manilla"
@@ -20,7 +22,6 @@ class MainActivity : AppCompatActivity() {
     private fun hacerLogin(usuario: String, clave: String) {
         // lifecycleScope.launch = ejecuta en una corrutina (sin congelar la app)
         lifecycleScope.launch {
-
 
             try {
                 val resp = RetrofitClient.api.login(
