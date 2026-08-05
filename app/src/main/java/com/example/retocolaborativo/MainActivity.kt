@@ -30,12 +30,15 @@ class MainActivity : AppCompatActivity() {
                 if (resp.isSuccessful) {
                     token = resp.body()?.accessToken   // ← guardamos el token
                     Log.d("API", "Token recibido: $token")
-                    obtenerUsuario()                  // seguimos al GET
-
-        }
+                    obtenerUsuario()
+                }else {
+                        Log.e("API", "Login falló: ${resp.code()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("API", "Error de red: ${e.message}")
+                }
             }
         }
-    }
 }
 
 
