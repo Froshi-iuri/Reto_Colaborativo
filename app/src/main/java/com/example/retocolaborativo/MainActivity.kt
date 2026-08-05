@@ -39,12 +39,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    private fun obtenerUsuario()
-
-
-
-
-}
+    private fun obtenerUsuario()   {
+        val t = token ?: return              // si no hay token, no seguimos
+        lifecycleScope.launch {
+            try {
+                // ojo: el formato es "Bearer " + token
+                val resp = RetrofitClient.api.getCurrentUser("Bearer $t")
+                if (resp.isSuccessful) {
+                    val user = resp.body()
+                    Log.d("API", "Hola ${user?.firstName} - ${user?.email}")
+                }
+            }
+        }
 
 
 
