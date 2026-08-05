@@ -49,8 +49,11 @@ class MainActivity : AppCompatActivity() {
                     val user = resp.body()
                     Log.d("API", "Hola ${user?.firstName} - ${user?.email}")
                 }
+            } catch (e: Exception) {
+                Log.e("API", "Error: ${e.message}")
             }
         }
-
+    }
+}
 
 
