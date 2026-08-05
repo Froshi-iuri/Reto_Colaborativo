@@ -15,4 +15,10 @@ class MainActivity : AppCompatActivity() {
 
         hacerLogin("emilys", "emilyspass")
     }
-}
+
+
+    private fun hacerLogin(usuario: String, clave: String) {
+        // lifecycleScope.launch = ejecuta en una corrutina (sin congelar la app)
+        lifecycleScope.launch {
+
+            }
