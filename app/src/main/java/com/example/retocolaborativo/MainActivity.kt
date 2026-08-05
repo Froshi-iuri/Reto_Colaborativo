@@ -21,4 +21,21 @@ class MainActivity : AppCompatActivity() {
         // lifecycleScope.launch = ejecuta en una corrutina (sin congelar la app)
         lifecycleScope.launch {
 
+
+            try {
+                val resp = RetrofitClient.api.login(
+                    LoginRequest(usuario, clave)
+                )
+                if (resp.isSuccessful) {
+                    token = resp.body()?.accessToken   // ← guardamos el token
+                    Log.d("API", "Token recibido: $token")
+                    obtenerUsuario()                  // seguimos al GET
+
+        }
             }
+        }
+    }
+}
+
+
+
