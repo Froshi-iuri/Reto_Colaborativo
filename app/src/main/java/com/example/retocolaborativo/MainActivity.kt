@@ -1,54 +1,61 @@
 package com.example.retocolaborativo
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.retocolaborativo.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private var token: String? = null   // aquí guardaremos la "manilla"
+    private lateinit var binding: ActivityMainBinding
+    private var token: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        hacerLogin("emilys", "emilyspass")
+        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        token = prefs.getString("token_guardado", null)
+        if (token != null) obtenerUsuario()
+
+        binding.btnLogin.setOnClickListener {
+            val user = binding.etUsername.text.toString().trim()
+            val pass = binding.etPassword.text.toString().trim()
+            if (user.isNotEmpty() && pass.isNotEmpty()) hacerLogin(user, pass)
+            else Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show()
+        }
     }
 
-
     private fun hacerLogin(usuario: String, clave: String) {
-        // lifecycleScope.launch = ejecuta en una corrutina (sin congelar la app)
         lifecycleScope.launch {
-
             try {
-                val resp = RetrofitClient.api.login(
-                    LoginRequest(usuario, clave)
-                )
+                val resp = RetrofitClient.api.login(LoginRequest(usuario, clave))
                 if (resp.isSuccessful) {
-                    token = resp.body()?.accessToken   // ← guardamos el token
-                    Log.d("API", "Token recibido: $token")
+                    token = resp.body()?.accessToken
+                    getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit()
+                        .putString("token_guardado", token).apply()
                     obtenerUsuario()
-                }else {
-                        Log.e("API", "Login falló: ${resp.code()}")
-                    }
-                } catch (e: Exception) {
-                    Log.e("API", "Error de red: ${e.message}")
+                } else {
+                    Toast.makeText(this@MainActivity, "Login falló", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: Exception) {
+                Log.e("API", "Error: ${e.message}")
             }
         }
-    private fun obtenerUsuario()   {
-        val t = token ?: return              // si no hay token, no seguimos
+    }
+
+    private fun obtenerUsuario() {
+        val t = token ?: return
         lifecycleScope.launch {
             try {
-                // ojo: el formato es "Bearer " + token
                 val resp = RetrofitClient.api.getCurrentUser("Bearer $t")
                 if (resp.isSuccessful) {
                     val user = resp.body()
-                    Log.d("API", "Hola ${user?.firstName} - ${user?.email}")
+                    binding.tvResult.text = "Hola ${user?.firstName}"
                 }
             } catch (e: Exception) {
                 Log.e("API", "Error: ${e.message}")
@@ -56,5 +63,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
